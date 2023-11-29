@@ -17,7 +17,7 @@
             return price;
         }
 
-        public void BuyProduct()
+        public void BuyProduct(Product product)
         {
 
         }
