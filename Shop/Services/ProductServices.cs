@@ -9,11 +9,19 @@ namespace Shop.Services
     public class ProductServices
     {
         private readonly DataContext context;
+        
 
         public ProductServices(DataContext context)
         {
             this.context = context;
         }
+
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+            var products = await context.Products.ToListAsync();
+            return products;
+        }
+
 
         public async Task<ActionResult<Product>> CreateLot(Product productdto)
         {
@@ -31,13 +39,24 @@ namespace Shop.Services
             return product;
         }
 
-        public async Task<ActionResult<Product>> Deletelot(int productId)
+        public async Task Deletelot(int productId)
         {
+            try
+            {
             var product = await context.Products.FirstAsync(b => b.Id == productId);
-            context.Products.Remove(product);
-            await context.SaveChangesAsync();
-            return product;
+                if (product != null)
+                {
+                    context.Products.Remove(product);
+                    await context.SaveChangesAsync();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+            
         }
+
         public async Task<ActionResult<Product>> BuyLot(string namelot)
         {
             var product = await context.Products.FirstAsync(b => b.Name == namelot);
@@ -62,11 +81,13 @@ namespace Shop.Services
         {
            public ProductValidator()
             {
+                RuleFor(product => product.Id).NotEmpty()
+                   .WithMessage("Please provide correctly id");
                 RuleFor(product  => product.Name).NotEmpty()
                     .WithMessage("Please enter correctly name");
                 RuleFor(product => product.Price).NotEmpty()
                     .GreaterThan(0)
-                    .WithMessage("Please enter correctly name");
+                    .WithMessage("Please enter correctly price");
             }
         }
 

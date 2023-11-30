@@ -1,24 +1,34 @@
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
+using Shop.Extensions;
+using Shop.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DataContext>(opt => {
-    opt.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"));
-
-});
+//Transfered All services and connection string
+//into another class name DependencyServiceExt.cs 
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+/*app.UseCors(builder => builder.AllowAnyHeader().AllowAnyMethod()
+.WithOrigins("https://localhost:4200"));*/
 
-app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapControllers();
+
+/*app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+*/
+
+using var scrope = app.Services.CreateScope();
+var services = scrope.ServiceProvider;
+
+
 
 app.Run();
 

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Shop.Data;
 using Shop.Entities;
+using Shop.Services;
 
 namespace Shop.Contoller
 {
@@ -9,33 +11,33 @@ namespace Shop.Contoller
     [ApiController]
     public class ProductContoller : ControllerBase
     {
-        private readonly DataContext context;
+        private readonly ProductServices productServices; 
 
-        public ProductContoller(DataContext context)
+        public ProductContoller(ProductServices productServices)
         {
-            this.context = context;
+            this.productServices = productServices;
         }
 
 
-        [HttpPost]
+        [HttpGet("Products")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        {
+           var products = await productServices.GetProducts();
+            return Ok(products.Value);
+        }
+
+
+        [HttpPost("CreateNewProduct")]
         public async Task<ActionResult<Bargain>> PostNewProduct(Product productdto)
         {
-            var product = new Product
-            {
-                Name = productdto.Name,
-                Price = productdto.Price,
-                Description = productdto.Description,
-                PhotoUrl = productdto.PhotoUrl
-            };
-
-          
-
+            await productServices.CreateLot(productdto);
             return Ok();
         }
 
-        [HttpDelete]
-        public async Task<ActionResult> DeletePost(int postId)
+        [HttpDelete("DeleteLot")]
+        public async Task<ActionResult> DeletePost(Product productdto)
         {
+            await productServices.Deletelot(productdto.Id);
             return Ok();
         }
 

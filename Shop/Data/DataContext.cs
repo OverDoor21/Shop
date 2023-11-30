@@ -18,6 +18,7 @@ namespace Shop.Data
                 .HasDiscriminator<string>("UserType")
                 .HasValue<Client>("Client")
                 .HasValue<Seller>("Seller");
+        
 
         }
 

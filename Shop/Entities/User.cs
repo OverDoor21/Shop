@@ -12,4 +12,7 @@
         }
 
     }
+
+    public class Seller : User { }
+    public class Client : User { }
 }

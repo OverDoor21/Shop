@@ -36,7 +36,7 @@ namespace Shop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Bargains");
+                    b.ToTable("Bargains", (string)null);
                 });
 
             modelBuilder.Entity("Shop.Entities.Product", b =>
@@ -59,7 +59,7 @@ namespace Shop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Products");
+                    b.ToTable("Products", (string)null);
                 });
 
             modelBuilder.Entity("Shop.Entities.User", b =>
@@ -78,7 +78,7 @@ namespace Shop.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
 
                     b.HasDiscriminator<string>("UserType").HasValue("User");
 
