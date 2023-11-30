@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
+using Shop.Dto;
 using Shop.Entities;
 using Shop.Services;
 
@@ -25,6 +26,17 @@ namespace Shop.Contoller
            var products = await productServices.GetProducts();
             return Ok(products.Value);
         }
+
+        //GetProducts using filter and pagination
+
+        [HttpGet("Filter")]
+        public async Task<ActionResult<IEnumerable<Product>>> GetPagedResultWithFilter(FilterDto filterDto)
+        {
+            var products = await productServices.GetProductsByPage(filterDto.Filter, filterDto.SortBy, filterDto.SortByDesceding);
+            return Ok(products.Value);
+        }
+
+
 
 
         [HttpPost("CreateNewProduct")]

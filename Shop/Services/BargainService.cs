@@ -24,7 +24,6 @@ namespace Shop.Services
             if (!CanUserMakeBargain(userId, productId))
             {
                 throw new InvalidOperationException("You cannot do this you reach of your limit");
-
             }
             //Check UserIsClient
 

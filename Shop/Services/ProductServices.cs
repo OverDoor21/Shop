@@ -1,8 +1,11 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Shop.Data;
+using Shop.Dto;
 using Shop.Entities;
+using System.Linq.Expressions;
 
 namespace Shop.Services
 {
@@ -21,6 +24,49 @@ namespace Shop.Services
             var products = await context.Products.ToListAsync();
             return products;
         }
+
+
+        //Pagination- special part where you can find by filter name
+        //or just make more easier to look by separate to small groups
+        //filter using for separate only needed products
+        //SortByCanAccept Only - Price and Name
+        //sortByDesceding accept only false and bool
+
+        public async Task<ActionResult<PagedResult<Product>>> GetProductsByPage(string filter,string sortBy,bool sortByDesceding)
+        {
+            
+            int pageNumber = 1;
+            int pageSize = 10;
+
+            var query = context.Products
+            .Where(u => filter == null 
+            || (u.Name.ToLower().Contains(filter.ToLower()) 
+            || u.Description.ToLower().Contains(filter.ToLower())));
+
+            var totalCount = query.Count();
+
+            if (sortBy != null)
+            {
+                var columnSelector = new Dictionary<string, Expression<Func<Product, object>>>
+        {
+            {"Name", product => product.Name },
+            {"Price", product => product.Price }
+        };
+
+                var sortByExpresion = columnSelector[sortBy];
+                query = sortByDesceding
+                ? query.OrderByDescending(sortByExpresion)
+                : query.OrderBy(sortByExpresion);
+
+            }
+
+            var result = query.Skip(pageSize * (pageNumber - 1))
+               .Take(pageSize)
+               .ToList();
+            var pagedResult = new PagedResult<Product>(result, totalCount, pageSize, pageNumber);
+            return pagedResult;
+        }
+
 
 
         public async Task<ActionResult<Product>> CreateLot(Product productdto)
